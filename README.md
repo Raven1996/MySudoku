@@ -1,5 +1,6 @@
 # MySudoku
 My first program on Github.<br />
 This program is written in JavaScript and it contains Chinese text.<br />
-You can download and play it with your web browser or <a href="http://htmlpreview.github.io/?https://github.com/Raven1996/MySudoku/blob/master/MySudoku.html" target="_blank">preview</a>.<br />
-欢迎试玩！简单的数独。
+JS数独程序，中文。<br />
+You can <a href="http://htmlpreview.github.io/?https://github.com/Raven1996/MySudoku/blob/master/MySudoku.html" target="_blank">preview</a> and play it with your web browser.<br />
+欢迎<a href="http://htmlpreview.github.io/?https://github.com/Raven1996/MySudoku/blob/master/MySudoku.html" target="_blank">试玩</a>！简单的数独。
