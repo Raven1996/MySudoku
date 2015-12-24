@@ -71,6 +71,7 @@ display: none;
 <script>
 
 var sudoku=new Array(9);  //先声明一维
+var check=new Array(9);
 var nine=[1,2,3,4,5,6,7,8,9];
 
 for(var i=0; i<9; i++){
@@ -79,7 +80,7 @@ for(var i=0; i<9; i++){
 	if(p!=q){
 		nine[p]+=nine[q];
 		nine[q]=nine[p]-nine[q];
-		nine[p]=nine[p]-nine[q];  //交换用于生成的九个数
+		nine[p]=nine[p]-nine[q];  //随机交换用于生成的九个数
 		}
 	}
 
@@ -95,15 +96,65 @@ for(var k=0; k<9; k++){
 	}
 	
 function SubmitFunction(){
-alert("完成！");
+var flag=false;
+
 for(var k=0; k<9; k++){
+	for(var j=0; j<9; j++) check[j]=0;
 	for(var j=0; j<9; j++){
-		document.getElementById("r"+k+"l"+j).readOnly=true;
+		var num=parseInt(document.getElementById("r"+k+"l"+j).value);
+		if(!isNaN(num)&&num>0&&num<10) check[num-1]=1;
+		}
+	var s=0;
+	for(var j=0; j<9; j++) s+=check[j];
+	if(s!=9) flag=true;
+	}  //检查行 
+	
+if(!flag){
+	for(var k=0; k<9; k++){
+		for(var j=0; j<9; j++) check[j]=0;
+		for(var j=0; j<9; j++){
+			var num=parseInt(document.getElementById("r"+j+"l"+k).value);
+			if(!isNaN(num)&&num>0&&num<10) check[num-1]=1;
+			}
+		var s=0;
+		for(var j=0; j<9; j++) s+=check[j];
+		if(s!=9) flag=true;
+		}
+	} //检查列
+	
+if(!flag){
+	var p,q;
+    for(var n=0; n<3; n++)
+	for(var m=0; m<3; m++){
+		for(var k=0; k<9; k++) check[k]=0;
+		for(var k=0; k<3; k++)
+		for(var j=0; j<3; j++){
+			p=n*3+k;
+			q=m*3+j;
+			var num=parseInt(document.getElementById("r"+p+"l"+q).value);
+			if(!isNaN(num)&&num>0&&num<10) check[num-1]=1;
+			}
+		var s=0;
+		for(var j=0; j<9; j++) s+=check[j];
+		if(s!=9) flag=true;
+		}
+	} //检查格子
+	
+if(flag){
+	alert("出错！请检验您填入的数字");
+	return;
+	}else{
+		for(var k=0; k<9; k++){
+			for(var j=0; j<9; j++){
+				var num=parseInt(document.getElementById("r"+k+"l"+j).value);
+				document.getElementById("r"+k+"l"+j).value=num;
+				document.getElementById("r"+k+"l"+j).readOnly=true;
+				}
+			}
+		document.getElementById("submit").style.display="none";
+		document.getElementById("success").style.display="block";
 		}
 	}
-document.getElementById("submit").style.display="none";
-document.getElementById("success").style.display="block";
-}
 
 
 function ChangeRow(p,q){
@@ -184,75 +235,37 @@ document.getElementById("submit").style.display="block";
 <tr>
 <td><table class="SmallT" cellspacing="0" cellpadding="0">
 <tr>
-<td><input id="r0l0" /></td><td><input id="r0l1" /></td><td><input id="r0l2" /></td>
+<td><input id="r0l0" type="tel" /></td><td><input id="r0l1" type="tel" /></td><td><input id="r0l2" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r1l0" /></td><td><input id="r1l1" /></td><td><input id="r1l2" /></td>
+<td><input id="r1l0" type="tel" /></td><td><input id="r1l1" type="tel" /></td><td><input id="r1l2" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r2l0" /></td><td><input id="r2l1" /></td><td><input id="r2l2" /></td>
-</tr>
-</table></td>
-
-<td><table class="SmallT" cellspacing="0" cellpadding="0">
-<tr>
-<td><input id="r0l3" /></td><td><input id="r0l4" /></td><td><input id="r0l5" /></td>
-</tr>
-<tr>
-<td><input id="r1l3" /></td><td><input id="r1l4" /></td><td><input id="r1l5" /></td>
-</tr>
-<tr>
-<td><input id="r2l3" /></td><td><input id="r2l4" /></td><td><input id="r2l5" /></td>
+<td><input id="r2l0" type="tel" /></td><td><input id="r2l1" type="tel" /></td><td><input id="r2l2" type="tel" /></td>
 </tr>
 </table></td>
 
 <td><table class="SmallT" cellspacing="0" cellpadding="0">
 <tr>
-<td><input id="r0l6" /></td><td><input id="r0l7" /></td><td><input id="r0l8" /></td>
+<td><input id="r0l3" type="tel" /></td><td><input id="r0l4" type="tel" /></td><td><input id="r0l5" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r1l6" /></td><td><input id="r1l7" /></td><td><input id="r1l8" /></td>
+<td><input id="r1l3" type="tel" /></td><td><input id="r1l4" type="tel" /></td><td><input id="r1l5" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r2l6" /></td><td><input id="r2l7" /></td><td><input id="r2l8" /></td>
-</tr>
-</table></td>
-</tr>
-
-<tr>
-<td><table class="SmallT" cellspacing="0" cellpadding="0">
-<tr>
-<td><input id="r3l0" /></td><td><input id="r3l1" /></td><td><input id="r3l2" /></td>
-</tr>
-<tr>
-<td><input id="r4l0" /></td><td><input id="r4l1" /></td><td><input id="r4l2" /></td>
-</tr>
-<tr>
-<td><input id="r5l0" /></td><td><input id="r5l1" /></td><td><input id="r5l2" /></td>
+<td><input id="r2l3" type="tel" /></td><td><input id="r2l4" type="tel" /></td><td><input id="r2l5" type="tel" /></td>
 </tr>
 </table></td>
 
 <td><table class="SmallT" cellspacing="0" cellpadding="0">
 <tr>
-<td><input id="r3l3" /></td><td><input id="r3l4" /></td><td><input id="r3l5" /></td>
+<td><input id="r0l6" type="tel" /></td><td><input id="r0l7" type="tel" /></td><td><input id="r0l8" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r4l3" /></td><td><input id="r4l4" /></td><td><input id="r4l5" /></td>
+<td><input id="r1l6" type="tel" /></td><td><input id="r1l7" type="tel" /></td><td><input id="r1l8" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r5l3" /></td><td><input id="r5l4" /></td><td><input id="r5l5" /></td>
-</tr>
-</table></td>
-
-<td><table class="SmallT" cellspacing="0" cellpadding="0">
-<tr>
-<td><input id="r3l6" /></td><td><input id="r3l7" /></td><td><input id="r3l8" /></td>
-</tr>
-<tr>
-<td><input id="r4l6" /></td><td><input id="r4l7" /></td><td><input id="r4l8" /></td>
-</tr>
-<tr>
-<td><input id="r5l6" /></td><td><input id="r5l7" /></td><td><input id="r5l8" /></td>
+<td><input id="r2l6" type="tel" /></td><td><input id="r2l7" type="tel" /></td><td><input id="r2l8" type="tel" /></td>
 </tr>
 </table></td>
 </tr>
@@ -260,37 +273,75 @@ document.getElementById("submit").style.display="block";
 <tr>
 <td><table class="SmallT" cellspacing="0" cellpadding="0">
 <tr>
-<td><input id="r6l0" /></td><td><input id="r6l1" /></td><td><input id="r6l2" /></td>
+<td><input id="r3l0" type="tel" /></td><td><input id="r3l1" type="tel" /></td><td><input id="r3l2" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r7l0" /></td><td><input id="r7l1" /></td><td><input id="r7l2" /></td>
+<td><input id="r4l0" type="tel" /></td><td><input id="r4l1" type="tel" /></td><td><input id="r4l2" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r8l0" /></td><td><input id="r8l1" /></td><td><input id="r8l2" /></td>
-</tr>
-</table></td>
-
-<td><table class="SmallT" cellspacing="0" cellpadding="0">
-<tr>
-<td><input id="r6l3" /></td><td><input id="r6l4" /></td><td><input id="r6l5" /></td>
-</tr>
-<tr>
-<td><input id="r7l3" /></td><td><input id="r7l4" /></td><td><input id="r7l5" /></td>
-</tr>
-<tr>
-<td><input id="r8l3" /></td><td><input id="r8l4" /></td><td><input id="r8l5" /></td>
+<td><input id="r5l0" type="tel" /></td><td><input id="r5l1" type="tel" /></td><td><input id="r5l2" type="tel" /></td>
 </tr>
 </table></td>
 
 <td><table class="SmallT" cellspacing="0" cellpadding="0">
 <tr>
-<td><input id="r6l6" /></td><td><input id="r6l7" /></td><td><input id="r6l8" /></td>
+<td><input id="r3l3" type="tel" /></td><td><input id="r3l4" type="tel" /></td><td><input id="r3l5" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r7l6" /></td><td><input id="r7l7" /></td><td><input id="r7l8" /></td>
+<td><input id="r4l3" type="tel" /></td><td><input id="r4l4" type="tel" /></td><td><input id="r4l5" type="tel" /></td>
 </tr>
 <tr>
-<td><input id="r8l6" /></td><td><input id="r8l7" /></td><td><input id="r8l8" /></td>
+<td><input id="r5l3" type="tel" /></td><td><input id="r5l4" type="tel" /></td><td><input id="r5l5" type="tel" /></td>
+</tr>
+</table></td>
+
+<td><table class="SmallT" cellspacing="0" cellpadding="0">
+<tr>
+<td><input id="r3l6" type="tel" /></td><td><input id="r3l7" type="tel" /></td><td><input id="r3l8" type="tel" /></td>
+</tr>
+<tr>
+<td><input id="r4l6" type="tel" /></td><td><input id="r4l7" type="tel" /></td><td><input id="r4l8" type="tel" /></td>
+</tr>
+<tr>
+<td><input id="r5l6" type="tel" /></td><td><input id="r5l7" type="tel" /></td><td><input id="r5l8" type="tel" /></td>
+</tr>
+</table></td>
+</tr>
+
+<tr>
+<td><table class="SmallT" cellspacing="0" cellpadding="0">
+<tr>
+<td><input id="r6l0" type="tel" /></td><td><input id="r6l1" type="tel" /></td><td><input id="r6l2" type="tel" /></td>
+</tr>
+<tr>
+<td><input id="r7l0" type="tel" /></td><td><input id="r7l1" type="tel" /></td><td><input id="r7l2" type="tel" /></td>
+</tr>
+<tr>
+<td><input id="r8l0" type="tel" /></td><td><input id="r8l1" type="tel" /></td><td><input id="r8l2" type="tel" /></td>
+</tr>
+</table></td>
+
+<td><table class="SmallT" cellspacing="0" cellpadding="0">
+<tr>
+<td><input id="r6l3" type="tel" /></td><td><input id="r6l4" type="tel" /></td><td><input id="r6l5" type="tel" /></td>
+</tr>
+<tr>
+<td><input id="r7l3" type="tel" /></td><td><input id="r7l4" type="tel" /></td><td><input id="r7l5" type="tel" /></td>
+</tr>
+<tr>
+<td><input id="r8l3" type="tel" /></td><td><input id="r8l4" type="tel" /></td><td><input id="r8l5" type="tel" /></td>
+</tr>
+</table></td>
+
+<td><table class="SmallT" cellspacing="0" cellpadding="0">
+<tr>
+<td><input id="r6l6" type="tel" /></td><td><input id="r6l7" type="tel" /></td><td><input id="r6l8" type="tel" /></td>
+</tr>
+<tr>
+<td><input id="r7l6" type="tel" /></td><td><input id="r7l7" type="tel" /></td><td><input id="r7l8" type="tel" /></td>
+</tr>
+<tr>
+<td><input id="r8l6" type="tel" /></td><td><input id="r8l7" type="tel" /></td><td><input id="r8l8" type="tel" /></td>
 </tr>
 </table></td>
 </tr>
