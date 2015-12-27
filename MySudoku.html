@@ -69,30 +69,27 @@ display: none;
 </style>
 
 <script>
+var check=new Array(9);  //用于检查的数组
 
 var sudoku=new Array(9);  //先声明一维
-var check=new Array(9);
-var nine=[1,2,3,4,5,6,7,8,9];
-
-for(var i=0; i<9; i++){
-	var p=Math.floor(Math.random()*9);
-	var q=Math.floor(Math.random()*9);
-	if(p!=q){
-		nine[p]+=nine[q];
-		nine[q]=nine[p]-nine[q];
-		nine[p]=nine[p]-nine[q];  //随机交换用于生成的九个数
-		}
-	}
-
 for(var k=0; k<9; k++){ 
 	sudoku[k]=new Array(9);  //声明二维
-	for(var j=0; j<9; j++){
-		if(k<3){
-			sudoku[k][j]=nine[(k*3+j)%9];
-			}else if(k<6){
-				sudoku[k][j]=nine[(k*3+1+j)%9];
-				}else sudoku[k][j]=nine[(k*3+2+j)%9];  //赋初值，使每行每列每个格子都没有重复的数字
-		}
+	for(var j=0; j<9; j++)
+		sudoku[k][j]=0;  //赋初值，均为零
+	}
+	
+var number=new Array(9);  //先声明一维
+for(var k=0; k<9; k++){ 
+	number[k]=new Array(9);  //声明二维
+	for(var j=0; j<9; j++)
+		number[k][j]=-1;  //每一小格数字的位置情况，第一个下标表示所在的方格，第二个下标表示是数字几，其中-1表示不存在
+	}
+	
+var time=new Array(9);  //先声明一维
+for(var k=0; k<9; k++){ 
+	time[k]=new Array(9);  //声明二维
+	for(var j=0; j<9; j++)
+		time[k][j]=8;  //每个数字还有多少次移动可能，第一个下标表示所在的方格，第二个下标表示是数字几
 	}
 	
 function SubmitFunction(){
@@ -156,59 +153,74 @@ if(flag){
 		}
 	}
 
-
-function ChangeRow(p,q){
-for(var i=0; i<9; i++){
-	sudoku[p][i]+=sudoku[q][i];
-	sudoku[q][i]=sudoku[p][i]-sudoku[q][i];
-	sudoku[p][i]=sudoku[p][i]-sudoku[q][i];  //交换行
+function CheckBlank(num,row,line){
+if(sudoku[row][line]>0) return false;
+for(var i=0;i<9;i++)
+	if(sudoku[row][i]==num||sudoku[i][line]==num){
+		return false;
+		}
+return true;
 }
-}
-
-function ChangeLine(p,q){
-for(var i=0; i<9; i++){
-	sudoku[i][p]+=sudoku[i][q];
-	sudoku[i][q]=sudoku[i][p]-sudoku[i][q];  
-	sudoku[i][p]=sudoku[i][p]-sudoku[i][q];  //交换列
-}
-}
-
-function CreateSudoku(hardindex){
+	
+function CreateSudoku(blank){
 document.getElementById("choose").style.display="none";
 document.getElementById("choise").style.display="none";
 document.getElementById("loading").style.display="block";  //加载时等待
 
-for(var i=0; i<3; i++){
-    for(var j=0; j<3; j++){
-		var p=i*3+Math.floor(Math.random()*3);
-		var q=i*3+Math.floor(Math.random()*3);
-		if(p!=q) ChangeRow(p,q);  //随机交换行
-		p=i*3+Math.floor(Math.random()*3);
-		q=i*3+Math.floor(Math.random()*3);
-		if(p!=q) ChangeLine(p,q);  //随机交换列
-	}
-}
+var nownum=1; //现在正在填的数字
+var nowpos=0; //现在正在填第几个格子
 
-for(var i=0; i<3; i++){
-	var p=Math.floor(Math.random()*3);
-	var q=Math.floor(Math.random()*3);
-	if(p!=q){
-		ChangeRow(3*p,3*q);
-		ChangeRow(3*p+1,3*q+1);
-		ChangeRow(3*p+2,3*q+2);
+while(nownum<10){
+    if(number[nowpos][nownum-1]==-1){  //未填
+		number[nowpos][nownum-1]=Math.floor(Math.random()*9);  //随机位置
+		}else{  //已填
+		    sudoku[Math.floor(nowpos/3)*3+Math.floor(number[nowpos][nownum-1]/3)][(nowpos%3)*3+number[nowpos][nownum-1]%3]=0;
+			number[nowpos][nownum-1]++;
+			number[nowpos][nownum-1]%=9;
+			time[nowpos][nownum-1]--;
+			}
+	
+	while(time[nowpos][nownum-1]>=0&&!CheckBlank(nownum,Math.floor(nowpos/3)*3+Math.floor(number[nowpos][nownum-1]/3),(nowpos%3)*3+number[nowpos][nownum-1]%3)){  //在可能的位置，且此位置不能填
+		number[nowpos][nownum-1]++;
+		number[nowpos][nownum-1]%=9;
+		time[nowpos][nownum-1]--;
+		}
+	
+	if(time[nowpos][nownum-1]==-1){  //没有地方可填
+		time[nowpos][nownum-1]=8;
+		number[nowpos][nownum-1]=-1;
+		nowpos--;
+		if(nowpos<0){  //回到上一层
+			nowpos=8;
+			nownum--;
+			}
+		}else{  //有地方可以填
+			sudoku[Math.floor(nowpos/3)*3+Math.floor(number[nowpos][nownum-1]/3)][(nowpos%3)*3+number[nowpos][nownum-1]%3]=nownum;
+			nowpos++;
+			}
+	
+	if(nowpos>8){  //这个数字填完了
+		nowpos=0;
+		nownum++;
+		}
 	}
-	p=Math.floor(Math.random()*3);
-	q=Math.floor(Math.random()*3);
-	if(p!=q){
-		ChangeLine(3*p,3*q);
-		ChangeLine(3*p+1,3*q+1);
-		ChangeLine(3*p+2,3*q+2);
-	}
-}  //随机交换3x3的格子
+
+for(var i=0; i<blank; i++){
+	var seq=Math.floor(Math.random()*(81-i));
+	var now=-1;
+	for(var j=0; j<seq+1; j++){
+		now++;
+		while(sudoku[Math.floor(now/9)][now%9]==0){
+			now++;
+			if(now==81) break;
+			}
+		}
+	sudoku[Math.floor(now/9)][now%9]=0;
+	}  //随机挖空
 
 for(var k=0; k<9; k++){
 	for(var j=0; j<9; j++){
-		if(Math.random()>hardindex){
+		if(sudoku[k][j]>0){
 			document.getElementById("r"+k+"l"+j).value=sudoku[k][j];
 			document.getElementById("r"+k+"l"+j).readOnly=true;
 			}else{
@@ -223,7 +235,6 @@ document.getElementById("submit").style.display="block";
 }
 
 </script>
-
 </head>
 
 <body>
@@ -349,9 +360,9 @@ document.getElementById("submit").style.display="block";
 
 <p id="choose" style="margin-left: auto; margin-right: auto; text-align: center">难度选择<br /><br /></p>
 <p id="choise" style="margin-left: auto; margin-right: auto; text-align: center">
-<input value="简单" type="button" onclick="CreateSudoku(0.35)" /><br /><br />
-<input value="标准" type="button" onclick="CreateSudoku(0.5)" /><br /><br />
-<input value="困难" type="button" onclick="CreateSudoku(0.65)" />
+<input value="简单" type="button" onclick="CreateSudoku(24)" /><br /><br />
+<input value="标准" type="button" onclick="CreateSudoku(36)" /><br /><br />
+<input value="困难" type="button" onclick="CreateSudoku(48)" />
 </p>
 
 <p id="submit" style="margin-left: auto; margin-right: auto; text-align:center">
