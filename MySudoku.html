@@ -50,8 +50,8 @@ border: 0px;
 }
 
 p>input{
-height :2.5em;
-width : 4em;
+height: 2.5em;
+width: 4em;
 font-size: 1em;
 background-color: #A63;
 font-family: Arial, "Microsoft YaHei";
@@ -60,6 +60,10 @@ margin-left: auto;
 margin-right: auto;
 border: 0px;
 border-radius: 0.2em
+}
+
+#longbuttom{
+width: 6em;
 }
 
 #loading, #submit, #success{
@@ -152,6 +156,17 @@ if(flag){
 		document.getElementById("success").style.display="block";
 		}
 	}
+	
+function AnswerFunction(){
+var out=new String;
+for(var k=0; k<9; k++){ 
+	for(var j=0; j<9; j++)
+		if(j<8) out=out+sudoku[k][j]+"  ";
+			else out=out+sudoku[k][j];
+	if(k<8) out=out+"\n";
+	}
+alert(out);
+}
 
 function CheckBlank(num,row,line){
 if(sudoku[row][line]>0) return false;
@@ -205,22 +220,26 @@ while(nownum<10){
 		}
 	}
 
+for(var k=0; k<9; k++)
+	for(var j=0; j<9; j++)
+		time[k][j]=1;  //未挖去
+	
 for(var i=0; i<blank; i++){
 	var seq=Math.floor(Math.random()*(81-i));
 	var now=-1;
 	for(var j=0; j<seq+1; j++){
 		now++;
-		while(sudoku[Math.floor(now/9)][now%9]==0){
+		while(time[Math.floor(now/9)][now%9]==0){
 			now++;
 			if(now==81) break;
 			}
 		}
-	sudoku[Math.floor(now/9)][now%9]=0;
+	time[Math.floor(now/9)][now%9]=0;
 	}  //随机挖空
 
 for(var k=0; k<9; k++){
 	for(var j=0; j<9; j++){
-		if(sudoku[k][j]>0){
+		if(time[k][j]>0){
 			document.getElementById("r"+k+"l"+j).value=sudoku[k][j];
 			document.getElementById("r"+k+"l"+j).readOnly=true;
 			}else{
@@ -367,12 +386,12 @@ document.getElementById("submit").style.display="block";
 
 <p id="submit" style="margin-left: auto; margin-right: auto; text-align:center">
 <br />
-<input value="提交" type="button" onclick="SubmitFunction()" /><br /><br />
+<input value="提交" type="button" onclick="SubmitFunction()" />
 </p>
 
 <p id="success" style="text-align: center; font-size: 1.2em">
 <br />
-成功！
+成功！&nbsp;<a href="javascript:AnswerFunction()">参考答案</a>
 </p>
 
 </body>
