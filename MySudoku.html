@@ -170,7 +170,7 @@ alert(out);
 
 function CheckBlank(num,row,line){
 if(sudoku[row][line]>0) return false;
-for(var i=0;i<9;i++)
+for(var i=0; i<9; i++)
 	if(sudoku[row][i]==num||sudoku[i][line]==num){
 		return false;
 		}
@@ -222,26 +222,94 @@ while(nownum<10){
 
 for(var k=0; k<9; k++)
 	for(var j=0; j<9; j++)
-		time[k][j]=1;  //未挖去
+		time[k][j]=1;  //time数组用于标记，1表示未挖去，-1表示不可挖，0表示挖去
+		
+var numpairs=new Array(99);
+for(var i=0; i<99; i++){
+	var p=Math.floor(i/10);
+	var q=i%10;
+	if(q>0&&q<p) numpairs[i]=1;
+		else numpairs[i]=0;
+	}  //记录下所有的不重复的数对，1表示需要扫描，共36对
 	
+var pairs=36;
+for(var i=0; i<pairs; i++){
+	var seq=Math.floor(Math.random()*(pairs-i));
+	var now=-1;
+	for(var j=0; j<seq+1; j++){
+		now++;
+		while(numpairs[now]==0){
+			now++;
+			}
+		}
+	var p=new Array(2);
+	p[0]=Math.floor(now/10);
+	p[1]=now%10;
+	var search=new Array(9);
+	var fallback=new Array(10);
+	for (var j=0; j<9; j++){
+		search[j]=1;  //标记这个宫有没有搜，没搜是1，搜过是0
+		fallback[j]=-1;  //数组模拟队列，入队搜索到的宫的编号
+		}
+	fallback[9]=-1;
+	var already=9;  //还有多少宫等待搜索
+	while(already>0){
+		j=0;
+		while(search[j]==0) j++;
+		search[j]=0;
+		already--;
+		var k=0;
+		var c=k+1;
+		var flag=true;  //孤立的数字对都没被标记，为true
+		fallback[k]=j;  //把剩下的未搜中的第一个入队
+		while(fallback[k]>=0){
+			for(j=0; j<2; j++)
+				if(time[Math.floor(fallback[k]/3)*3+Math.floor(number[fallback[k]][p[j]-1]/3)][(fallback[k]%3)*3+number[fallback[k]][p[j]-1]%3]<0) flag=false;
+			for(j=0; j<9; j++) if(search[j]!=0){
+				 //找坐标有影响的数对，入队，already--
+				 var effect=false;
+				 for(q=0; q<2; q++){
+					if(Math.floor(fallback[k]/3)*3+Math.floor(number[fallback[k]][p[q]-1]/3)==Math.floor(j/3)*3+Math.floor(number[j][p[1-q]-1]/3)) effect=true;
+					if((fallback[k]%3)*3+number[fallback[k]][p[q]-1]%3==(j%3)*3+number[j][p[1-q]-1]%3) effect=true;
+					}
+				if(effect){
+					search[j]=0;
+					fallback[c]=j;
+					j++;
+					c++;
+					already--;
+					}
+				}
+			k++;
+			}
+		if(flag){
+			var conf=Math.floor(Math.random()*2*k);
+			time[Math.floor(fallback[Math.floor(conf/2)]/3)*3+Math.floor(number[fallback[Math.floor(conf/2)]][p[conf%2]-1]/3)][(fallback[Math.floor(conf/2)]%3)*3+number[fallback[Math.floor(conf/2)]][p[conf%2]-1]%3]=-1;
+			}
+		}
+	numpairs[now]=0;
+	}
+
 for(var i=0; i<blank; i++){
 	var seq=Math.floor(Math.random()*(81-i));
 	var now=-1;
 	for(var j=0; j<seq+1; j++){
 		now++;
-		while(time[Math.floor(now/9)][now%9]==0){
+		if(now>80) break;
+		while(time[Math.floor(now/9)][now%9]<=0){
 			now++;
-			if(now==81) break;
+			if(now>80) break;
 			}
 		}
-	time[Math.floor(now/9)][now%9]=0;
+	if(now<81) time[Math.floor(now/9)][now%9]=0;
 	}  //随机挖空
 
 for(var k=0; k<9; k++){
 	for(var j=0; j<9; j++){
-		if(time[k][j]>0){
+		if(time[k][j]!=0){
 			document.getElementById("r"+k+"l"+j).value=sudoku[k][j];
 			document.getElementById("r"+k+"l"+j).readOnly=true;
+			if(time[k][j]==-1) document.getElementById("r"+k+"l"+j).style.backgroundColor="#DFD";
 			}else{
 				document.getElementById("r"+k+"l"+j).style.backgroundColor="#FEC";
 				}
