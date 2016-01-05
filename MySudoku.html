@@ -254,6 +254,7 @@ for(var i=0; i<pairs; i++){
 	fallback[9]=-1;
 	var already=9;  //还有多少宫等待搜索
 	while(already>0){
+		for (var j=0; j<10; j++) fallback[j]=-1;
 		j=0;
 		while(search[j]==0) j++;
 		search[j]=0;
@@ -275,7 +276,6 @@ for(var i=0; i<pairs; i++){
 				if(effect){
 					search[j]=0;
 					fallback[c]=j;
-					j++;
 					c++;
 					already--;
 					}
